@@ -1,7 +1,11 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 import SiteFooter from './components/comman/SiteFooter';
 
 import SiteNav from './components/comman/SiteNav';
+
 
 function App() {
   return (
