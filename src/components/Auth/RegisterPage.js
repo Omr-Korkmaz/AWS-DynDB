@@ -26,7 +26,10 @@ function RegisterPage() {
                             <Form.Control type="password"  minLength="8" placeholder="Enter Password" />
                         </Form.Group>
 
-                       
+                        <Form.Group className="mb-3" controlId="formConfirm">
+                            <Form.Label>Confirm</Form.Label>
+                            <Form.Control type="password"  minLength="8" placeholder="Confirm Password" />
+                        </Form.Group>
                         
                         <Button variant="primary" type="submit">Register &gt;&gt;</Button>&nbsp;
                     </Form>
