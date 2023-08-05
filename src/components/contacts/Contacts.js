@@ -19,7 +19,29 @@ function Contacts() {
     const [profilePic, setProfilePic] = useState("");
     const [profilePicPaths, setProfilePicPaths] = useState([]);
 
-  
+    const getContacts = async() => {
+        try {
+            const contactsData = await API.graphql(graphqlOperation(listContacts));
+            console.log(contactsData);
+
+            const contactsList = contactsData.data.listContacts.items;
+            setContacts(contactsList);
+
+            contacts.map(async (contact, indx) => {
+                const contactProfilePicPath = contacts[indx].profilePicPath;
+                try {
+                    const contactProfilePicPathURI = await Storage.get(contactProfilePicPath, {expires: 60});
+                    setProfilePicPaths([...profilePicPaths, contactProfilePicPathURI]);
+                } catch(err) {
+                    console.log('error', err);
+                }
+            });
+        } catch(err) {
+            console.log('error', err);
+        }
+    }
+
+
 
     const addNewContact = async () => {
         try {
