@@ -41,7 +41,9 @@ function Contacts() {
         }
     }
 
-
+    useEffect(() => {
+        getContacts()
+    }, []);
 
     const addNewContact = async () => {
         try {
