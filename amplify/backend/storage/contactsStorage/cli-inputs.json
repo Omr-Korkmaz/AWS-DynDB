@@ -1,0 +1,12 @@
+{
+  "resourceName": "contactsStorage",
+  "policyUUID": "c9ff6ea4",
+  "bucketName": "contactstorage12",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
