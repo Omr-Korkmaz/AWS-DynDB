@@ -103,24 +103,24 @@ function Contacts() {
                             <Form.Label>Name</Form.Label>
                             <Form.Control type="text" placeholder="Contact name"
                                           value={contactData.name} 
-                                          onChange={event => setContactData({...contactData, name:event.target.value})} />
+                                          onChange={evt => setContactData({...contactData, name:evt.target.value})} />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Email Address</Form.Label>
                             <Form.Control type="email" placeholder="Contact email" 
                                           value={contactData.email} 
-                                          onChange={event => setContactData({...contactData, email:event.target.value})} />
+                                          onChange={evt => setContactData({...contactData, email:evt.target.value})} />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicText">
                             <Form.Label>Cell</Form.Label>
                             <Form.Control type="text" placeholder="nnn-nnn-nnnn" 
                                           value={contactData.cell} 
-                                          onChange={event => setContactData({...contactData, cell:event.target.value})} />
+                                          onChange={evt => setContactData({...contactData, cell:evt.target.value})} />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicText">
                             <Form.Label>Profile Pic</Form.Label>
                             <Form.Control type="file" accept="image/png" 
-                                          onChange={event => setProfilePic(event.target.files[0])} />
+                                          onChange={evt => setProfilePic(evt.target.files[0])} />
                         </Form.Group>
                         <Button variant="primary" type="button" onClick={addNewContact}>Add Contact &gt;&gt;</Button>&nbsp;                        
                     </Form>

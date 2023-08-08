@@ -1,70 +1,133 @@
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState, useEffect } from 'react';
+import { API, graphqlOperation, Storage } from 'aws-amplify';
 
-import { Amplify } from 'aws-amplify';
-import { Authenticator, View, Image, useTheme, Text  } from '@aws-amplify/ui-react';
-import awsExports from './aws-exports';
+import { listContacts } from './graphql/queries';
+import { createContact } from './graphql/mutations';
 
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
-import SiteFooter from './components/comman/SiteFooter';
-import SiteNav from './components/comman/SiteNav';
-import { Route, Routes } from 'react-router-dom';
-import HomePage from './components/Home/HomePage';
+import {v4 as uuid} from 'uuid';
 
-import '@aws-amplify/ui-react/styles.css';
+function Contacts() {
+    const [contacts, setContacts] = useState([]);
+    const [contactData, setContactData] = useState({name: "", email: "", cell: ""});
+    const [profilePic, setProfilePic] = useState("");
+    const [profilePicPaths, setProfilePicPaths] = useState([]);
 
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import '@aws-amplify/ui-react/styles.css';
-// import Contacts from './components/contacts/Contacts';
+    const getContacts = async() => {
+        try {
+            const contactsData = await API.graphql(graphqlOperation(listContacts));
+            console.log(contactsData);
 
+            const contactsList = contactsData.data.listContacts.items;
+            setContacts(contactsList);
 
+            contacts.map(async (contact, indx) => {
+                const contactProfilePicPath = contacts[indx].profilePicPath;
+                try {
+                    const contactProfilePicPathURI = await Storage.get(contactProfilePicPath, {expires: 60});
+                    setProfilePicPaths([...profilePicPaths, contactProfilePicPathURI]);
+                } catch(err) {
+                    console.log('error', err);
+                }
+            });
+        } catch(err) {
+            console.log('error', err);
+        }
+    }
 
-Amplify.configure(awsExports);
+    useEffect(() => {
+        getContacts()
+    }, []);
 
-function App() {
-  const components = {
-    Header() {
-      const { tokens } = useTheme();
-  
-      return (
-        <View textAlign="center" padding={tokens.space.large}>
-          <Image
-            alt="Contacts App"
-            src="/img/logo.png"
-          />
-        </View>
-      );
-    },
-    Footer() {
-      const { tokens } = useTheme();
-  
-      return (
-        <View textAlign="center" padding={tokens.space.large}>
-          <Text color={tokens.colors.neutral[80]}>
-            &copy; 2022 Cumulus Cycles 
-          </Text>
-        </View>
-      );
-    },
-  };
+    const addNewContact = async () => {
+        try {
+            const { name, email, cell } = contactData;
 
-  return (
-    <Authenticator loginMechanisms={['email']} components={components}>
-    {({ signOut, user }) => (
-      <div>
-        <SiteNav logOut={signOut} />
-        <Routes>
-          <Route path='*' element={<HomePage />} />
-          <Route path='/' exact={true} element={<HomePage />} />
-          {/* <Route path='/contacts' element={<Contacts />} /> */}
+            // Upload pic to S3
+            Storage.configure({ region: 'us-east-1' });
+            const { key } = await Storage.put(`${uuid()}.png`, profilePic, {contentType: 'image/png'});
 
-        </Routes>
-        <SiteFooter />
-      </div>
-    )}
-    </Authenticator>
-  );
+            const newContact = {
+                id: uuid(),
+                name,
+                email,
+                cell,
+                profilePicPath: key
+            };
+
+            // Persist new Contact
+            await API.graphql(graphqlOperation(createContact, {input: newContact}));
+        } catch(err) {
+            console.log('error', err);
+        }
+    }
+
+    return (
+        <Container>
+            <Row className="px-4 my-5">
+                <Col><h1>Contacts</h1></Col>
+            </Row>
+            <Row>
+                {
+                    contacts.map((contact, indx) => {
+                        return (
+                            <Col className="px-2 my-2" key={indx}>
+                                <Card style={{ width: '12rem' }}>
+                                    <Card.Img 
+                                        src={profilePicPaths[indx]}
+                                        variant="top" />
+                                    <Card.Body>
+                                        <Card.Title>{contact.name}</Card.Title>
+                                        <Card.Text>
+                                            {contact.email}
+                                            <br />{contact.cell}
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        )
+                    })
+                }
+            </Row>
+            <Row className="px-4 my-5">
+                <Col sm={3}>
+                    <h2>Add New Contact</h2>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formBasicText">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control type="text" placeholder="Contact name"
+                                          value={contactData.name} 
+                                          onChange={event => setContactData({...contactData, name:event.target.value})} />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>Email Address</Form.Label>
+                            <Form.Control type="email" placeholder="Contact email" 
+                                          value={contactData.email} 
+                                          onChange={event => setContactData({...contactData, email:event.target.value})} />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicText">
+                            <Form.Label>Cell</Form.Label>
+                            <Form.Control type="text" placeholder="nnn-nnn-nnnn" 
+                                          value={contactData.cell} 
+                                          onChange={event => setContactData({...contactData, cell:event.target.value})} />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicText">
+                            <Form.Label>Profile Pic</Form.Label>
+                            <Form.Control type="file" accept="image/png" 
+                                          onChange={event => setProfilePic(event.target.files[0])} />
+                        </Form.Group>
+                        <Button variant="primary" type="button" onClick={addNewContact}>Add Contact &gt;&gt;</Button>&nbsp;                        
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
+    )
 }
 
-export default App;
+export default Contacts;
