@@ -75,12 +75,12 @@ function Contacts() {
             </Row>
             <Row>
                 {
-                    contacts.map((contact, indx) => {
+                    contacts.map((contact, index) => {
                         return (
-                            <Col className="px-2 my-2" key={indx}>
+                            <Col className="px-2 my-2" key={index}>
                                 <Card style={{ width: '12rem' }}>
                                     <Card.Img 
-                                        src={profilePicPaths[indx]}
+                                        src={profilePicPaths[index]}
                                         variant="top" />
                                     <Card.Body>
                                         <Card.Title>{contact.name}</Card.Title>
