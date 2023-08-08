@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "awscontactsaa9d0b82": {}
+      },
+      "storage": {
+        "contactsStorage": {}
+      },
+      "api": {
+        "contactAPI": {}
       }
     }
   }

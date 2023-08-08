@@ -1,26 +1,22 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { Amplify } from 'aws-amplify';
+import { Authenticator, View, Image, useTheme, Text  } from '@aws-amplify/ui-react';
+import awsExports from './aws-exports';
+
 
 import SiteFooter from './components/comman/SiteFooter';
 import SiteNav from './components/comman/SiteNav';
 import { Route, Routes } from 'react-router-dom';
 import HomePage from './components/Home/HomePage';
 
-import awsExports from './aws-exports';
-import { Amplify } from 'aws-amplify';
-
 import '@aws-amplify/ui-react/styles.css';
-
-
-
-
-import { Authenticator, View, Image, useTheme, Text  } from '@aws-amplify/ui-react';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '@aws-amplify/ui-react/styles.css';
-import Contacts from './components/contacts/Contacts';
+// import Contacts from './components/contacts/Contacts';
 
 
 
@@ -61,7 +57,7 @@ function App() {
         <Routes>
           <Route path='*' element={<HomePage />} />
           <Route path='/' exact={true} element={<HomePage />} />
-          <Route path='/contacts' element={<Contacts />} />
+          {/* <Route path='/contacts' element={<Contacts />} /> */}
 
         </Routes>
         <SiteFooter />
